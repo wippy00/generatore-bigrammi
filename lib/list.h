@@ -5,29 +5,32 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct{
-    char val[30];
-    struct Nodo* next;
-}Nodo;
+#include <wchar.h>
 
-Nodo* newNode(char val[30]){
+typedef struct nodo_t{
+    wchar_t val[31];
+    struct nodo_t* next;
+}nodo_t;
+
+nodo_t* newNode(wchar_t val[31]){
     // Crea il nuovo Nodo
-    Nodo *new = (Nodo*) malloc(sizeof(Nodo));
+    nodo_t *new = (nodo_t*) malloc(sizeof(nodo_t));
 
-    strncpy(new->val, val, 30);
+    wcscpy(new->val, val);
+    // wprintf(L"gino: %ls\n", val);
     new->next = NULL;
     
     return new;
 }
 
-void append(Nodo** head, char val[30]){
-    Nodo* new=newNode(val);
+void append(nodo_t** head, wchar_t val[31]){
+    nodo_t* new=newNode(val);
     if(*head==NULL)
     {
         *head=new;
         return;
     }
-    Nodo* temp=*head;
+    nodo_t* temp=*head;
     while(temp->next!=NULL)
     {
         temp=temp->next;
@@ -35,17 +38,17 @@ void append(Nodo** head, char val[30]){
     temp->next=new;
 }
 
-void printList(Nodo *head){
-    Nodo *temp = head;
+void printList(nodo_t *head){
+    nodo_t *temp = head;
     
     printf("\n [ ");
 
-    printf("%s", temp->val);
+    printf("%ls", temp->val);
     temp = temp->next;
 
     while (temp != NULL)
     {
-        printf(" -> %s", temp->val);
+        printf(" -> %ls", temp->val);
 
         temp = temp->next;
     }

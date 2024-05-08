@@ -1,8 +1,12 @@
+#include <locale.h>
+#include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
+// #include <string.h>
+#include <wchar.h>
+
 #include "./lib/list.h"
 
-#include <ctype.h> 
+#include <wctype.h>
 
 
 
@@ -13,7 +17,7 @@ Error 03:
 */
 
 
-FILE * open_file(path){
+FILE * open_file(char path[32]){
     FILE *pointer_file = fopen("./testo.txt", "r");
     if (pointer_file == NULL)
     {
@@ -24,18 +28,21 @@ FILE * open_file(path){
     return pointer_file;
 }
 
-Nodo * genera_lista(FILE *file){
-    int ascii;
+nodo_t * genera_lista(FILE *file){
     int indice_parola = 0;
-    char character;
-    char parola[30];
+    wchar_t character;
+    wchar_t parola[31];
+    for (int i = 0; i < 31; i++){
+        parola[i] = '\0';
+    }
 
-    Nodo *lista;
 
-    while ((ascii = fgetc(file)) != EOF)
+    nodo_t *lista = NULL;   //DEVI INIZIALIZZARE A NULL
+
+
+    while ((character = fgetwc(file)) != WEOF)
     {
-        character = tolower((char) ascii);
-
+        character = towlower(character);
         // se il carattere è uno spazio appendi la parola alla lista
         if (character == ' '){
             parola[indice_parola] = '\0';
@@ -67,7 +74,7 @@ Nodo * genera_lista(FILE *file){
             
         }
         // altrimenti appendi la lettera alla parola
-        else if(isalpha(ascii)){
+        else if(iswalnum(character) || character == '\''){
             parola[indice_parola] = character;
             indice_parola ++;
         }
@@ -78,12 +85,13 @@ Nodo * genera_lista(FILE *file){
 
 
 int main() {
-
+    setlocale(LC_ALL, "");
+    
     char path[32] = "testo.txt";
 
     FILE *file = open_file(path);
 
-    Nodo *lista = genera_lista(file);
+    nodo_t *lista = genera_lista(file);
 
 
     printList(lista);
