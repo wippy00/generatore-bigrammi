@@ -44,7 +44,7 @@ nodo_t * genera_lista(FILE *file){
     {
         character = towlower(character);
         // se il carattere è uno spazio appendi la parola alla lista
-        if (character == ' '){
+        if (character == ' ' && indice_parola > 0){
             parola[indice_parola] = '\0';
 
             append(&lista, parola);
@@ -79,6 +79,13 @@ nodo_t * genera_lista(FILE *file){
             indice_parola ++;
         }
     }
+    // se rimane una parola nel buffer lo appende 
+    if (indice_parola > 0){
+        
+        parola[indice_parola] = '\0';
+        indice_parola = 0;
+        append(&lista, parola);
+    }
 
     return lista;
 }
@@ -92,7 +99,6 @@ int main() {
     FILE *file = open_file(path);
 
     nodo_t *lista = genera_lista(file);
-
 
     printList(lista);
     return 0;
