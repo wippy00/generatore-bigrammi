@@ -9,7 +9,7 @@
 
 typedef struct nodo_t{
     wchar_t val[31];
-    struct nodo_t* next;
+    struct nodo_t* next_p;
 }nodo_t;
 
 nodo_t* newNode(wchar_t val[31]){
@@ -18,12 +18,13 @@ nodo_t* newNode(wchar_t val[31]){
 
     wcscpy(new->val, val);
     // wprintf(L"gino: %ls\n", val);
-    new->next = NULL;
+    new->next_p = NULL;
     
     return new;
 }
 
 void append(nodo_t** head, wchar_t val[31]){
+    // appende dalla coda
     nodo_t* new=newNode(val);
     if(*head==NULL)
     {
@@ -31,12 +32,22 @@ void append(nodo_t** head, wchar_t val[31]){
         return;
     }
     nodo_t* temp=*head;
-    while(temp->next!=NULL)
+    while(temp->next_p!=NULL)
     {
-        temp=temp->next;
+        temp=temp->next_p;
     }
-    temp->next=new;
+    temp->next_p=new;
 }
+
+void insert(nodo_t** head, wchar_t val[31]){
+    // appende dalla testa
+    nodo_t* new = newNode(val);
+    
+    new->next_p = *head;
+    *head = new;
+    return;
+}
+
 
 void printList(nodo_t *head){
     nodo_t *temp = head;
@@ -44,13 +55,13 @@ void printList(nodo_t *head){
     printf("\n [ ");
 
     printf("%ls", temp->val);
-    temp = temp->next;
+    temp = temp->next_p;
 
     while (temp != NULL)
     {
         printf(" -> %ls", temp->val);
 
-        temp = temp->next;
+        temp = temp->next_p;
     }
     printf(" ]\n");
 }
