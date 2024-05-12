@@ -5,33 +5,49 @@
 #include <stdlib.h>
 #include <wchar.h>
 
+typedef struct Node_t
+{
+    wchar_t val[31];
+    struct Node_t *next_p;
+    struct SubNode_t *inner_p;
+} Node_t;
+
 typedef struct SubNode_t
 {
     wchar_t val[31];
+    float freq;
     struct SubNode_t *next_p;
-    struct SubNode_t *inner_p;
 } SubNode_t;
 
 // Funzione per creare un nuovo nodo
-SubNode_t *sb_newNode(wchar_t val[31])
+Node_t *sb_newNode(wchar_t val[31])
 {
-    SubNode_t *new = (SubNode_t *)malloc(sizeof(SubNode_t));
+    Node_t *new = (Node_t *)malloc(sizeof(Node_t));
     wcscpy(new->val, val);
     new->next_p = NULL;
     new->inner_p = NULL;
     return new;
 }
 
-// Funzione per aggiungere un nodo alla fine della lista principale
-SubNode_t *sb_append(SubNode_t **head, wchar_t val[31])
+SubNode_t *sb_newSubNode(wchar_t val[31])
 {
-    SubNode_t *new = sb_newNode(val);
+    SubNode_t *new = (SubNode_t *)malloc(sizeof(SubNode_t));
+    wcscpy(new->val, val);
+    new->freq = 0;
+    new->next_p = NULL;
+    return new;
+}
+
+// Funzione per aggiungere un nodo alla fine della lista principale
+Node_t *sb_append(Node_t **head, wchar_t val[31])
+{
+    Node_t *new = sb_newNode(val);
     if (*head == NULL)
     {
         *head = new;
         return *head;
     }
-    SubNode_t *temp = *head;
+    Node_t *temp = *head;
     while (temp->next_p != NULL)
     {
         temp = temp->next_p;
@@ -40,8 +56,17 @@ SubNode_t *sb_append(SubNode_t **head, wchar_t val[31])
     return new;
 }
 
+// Funzione per aggiungere un nodo all'inizio della lista principale
+Node_t *sb_insert(Node_t **head, wchar_t val[31])
+{
+    Node_t *new = sb_newNode(val);
+    new->next_p = *head;
+    *head = new;
+    return new;
+}
+
 // Funzione per aggiungere un nodo alla sottolista di un nodo specifico
-void sb_appendToInner(SubNode_t *node, wchar_t val[31])
+void sb_appendToInner(Node_t *node, wchar_t val[31])
 {
     if (node == NULL)
     {
@@ -49,18 +74,30 @@ void sb_appendToInner(SubNode_t *node, wchar_t val[31])
     }
     if (node->inner_p == NULL)
     {
-        node->inner_p = sb_newNode(val);
+        node->inner_p = sb_newSubNode(val);
         return;
     }
-    SubNode_t *temp = node->inner_p;
+    Node_t *temp = node->inner_p;
     while (temp->next_p != NULL)
     {
         temp = temp->next_p;
     }
-    temp->next_p = sb_newNode(val);
+    temp->next_p = sb_newSubNode(val);
 }
 
-SubNode_t *sb_find(SubNode_t *head, wchar_t search_word[31])
+void sb_insertToInner(Node_t *node, wchar_t val[31])
+{
+    if (node == NULL)
+    {
+        return; // Se il nodo è nullo, non possiamo aggiungere nulla
+    }
+    SubNode_t *new = sb_newSubNode(val); // Crea un nuovo nodo con il valore fornito
+    new->next_p = node->inner_p;   // Imposta il puntatore next_p del nuovo nodo a quello che era il primo nodo della sottolista
+    new->freq = 1;
+    node->inner_p = new;           // Ora, il nuovo nodo diventa la testa della sottolista
+}
+
+SubNode_t *sb_find(Node_t *head, wchar_t search_word[31])
 {
     while (head != NULL)
     {
@@ -74,9 +111,23 @@ SubNode_t *sb_find(SubNode_t *head, wchar_t search_word[31])
     return NULL;
 }
 
-void sb_findInsert(SubNode_t **head_pointer, wchar_t search_word[31], wchar_t insert_word[31])
+SubNode_t *sb_subFind(SubNode_t *head, wchar_t search_word[31])
 {
-    SubNode_t *head = *head_pointer;
+    while (head != NULL)
+    {
+        if (wcscmp(search_word, head->val) == 0)
+        {
+            return head;
+            // printf("%p", &head);
+        }
+        head = head->next_p;
+    }
+    return NULL;
+}
+
+void sb_findInsert(Node_t **head_pointer, wchar_t search_word[31], wchar_t insert_word[31])
+{
+    Node_t *head = *head_pointer;
     SubNode_t *p = sb_find(head, search_word);
     if (p != NULL)
     {
@@ -89,54 +140,61 @@ void sb_findInsert(SubNode_t **head_pointer, wchar_t search_word[31], wchar_t in
     return;
 }
 
-void sb_magia(SubNode_t **head_of_list, wchar_t search_word[31], wchar_t insert_word[31])
+int sb_len(Node_t *head)
 {
-    SubNode_t *head = *head_of_list;
-    SubNode_t *p = sb_find(head, search_word);
-    if (p != NULL)
+    int count = 0;
+    while (head != NULL)
     {
-        sb_appendToInner(p, insert_word);
+        count++;
+
+        head = head->next_p;
     }
-    else
-    {
-        SubNode_t *sub_head = sb_append(head_of_list, search_word);
-        sb_appendToInner(sub_head, insert_word);
-    }
-    return;
+    return count;
 }
 
-// Funzione per stampare la lista principale e le relative sottoliste ricorsivamente
-void printSubListRec(SubNode_t *head)
+int sb_innerlen(SubNode_t *head)
 {
-    SubNode_t *temp = head;
-    printf("\n [ ");
-
-    while (temp != NULL)
+    int count = 0;
+    while (head != NULL)
     {
-        printf("%ls", temp->val);
+        count+=head->freq;
 
-        // Stampiamo la sottolista, se presente
-        if (temp->inner_p != NULL)
-        {
-            printf(" (");
-            printSubListRec(temp->inner_p);
-            printf(")");
-        }
-
-        if (temp->next_p != NULL)
-        {
-            printf(" -> ");
-        }
-
-        temp = temp->next_p;
+        head = head->next_p;
     }
-    printf(" ]");
+    return count;
 }
+
+// // Funzione per stampare la lista principale e le relative sottoliste ricorsivamente
+// void printSubListRec(Node_t *head)
+// {
+//     Node_t *temp = head;
+//     printf("\n [ ");
+
+//     while (temp != NULL)
+//     {
+//         printf("%ls", temp->val);
+
+//         // Stampiamo la sottolista, se presente
+//         if (temp->inner_p != NULL)
+//         {
+//             printf(" (");
+//             printSubListRec(temp->inner_p);
+//             printf(")");
+//         }
+
+//         if (temp->next_p != NULL)
+//         {
+//             printf(" -> ");
+//         }
+
+//         temp = temp->next_p;
+//     }
+//     printf(" ]");
+// }
 
 // Funzione per stampare la lista principale e la relativa sottolista
-void printSubList(SubNode_t *head)
+void printSubList(Node_t *head)
 {
-    SubNode_t *temp = head;
     printf("\n [ ");
 
     while (head != NULL)
@@ -150,7 +208,7 @@ void printSubList(SubNode_t *head)
             printf(" (");
             while (sub_head != NULL)
             {
-                printf("%ls", sub_head->val);
+                printf("%ls %.4f", sub_head->val, sub_head->freq);
                 if (sub_head->next_p != NULL)
                 {
                     printf(" -> ");

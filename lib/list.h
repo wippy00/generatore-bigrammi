@@ -39,8 +39,8 @@ void append(nodo_t** head, wchar_t val[31]){
     temp->next_p=new;
 }
 
+// appende dalla testa
 void insert(nodo_t** head, wchar_t val[31]){
-    // appende dalla testa
     nodo_t* new = newNode(val);
     
     new->next_p = *head;
@@ -48,6 +48,17 @@ void insert(nodo_t** head, wchar_t val[31]){
     return;
 }
 
+int len(nodo_t *head){
+    
+    int count=0;
+    while (head != NULL)
+    {
+        count++;
+
+        head = head->next_p;
+    }
+    return count;
+}
 
 void printList(nodo_t *head){
     nodo_t *temp = head;
