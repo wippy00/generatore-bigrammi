@@ -29,8 +29,8 @@
 *.dylib
 
 # Executables
-progetto
-list
+bigrammi
+generatore
 *.exe
 *.out
 *.app
