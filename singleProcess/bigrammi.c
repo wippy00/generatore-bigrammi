@@ -1,6 +1,7 @@
 #include <locale.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <float.h>
 
 #include <wchar.h>
 #include <wctype.h>
@@ -17,7 +18,6 @@ Error 01: Errore apertura file
 Error 02:
 Error 03:
 */
-
 
 /*      Funzioni Programma       */
 
@@ -64,7 +64,7 @@ nodo_t *genera_lista(FILE *file)
             indice_parola = 0;
         }
         // aggiunge alla parola l'apostrofo e termina la parola
-        else if(character == '\'')
+        else if (character == '\'')
         {
             parola[indice_parola] = character;
             indice_parola++;
@@ -142,21 +142,26 @@ void genera_file(FILE *file, Node_t *head)
             {
                 if (len > 1)
                 {
-                    freq = (float) sub_head->freq / len;
+                    freq = (float)sub_head->freq / len;
                 }
                 else
                 {
                     freq = 1;
                 }
 
-                fprintf(file, "%ls,%.4g", sub_head->val, freq);
+                /* Stampa un float rimuovendo gli zeri meno significativi*/
+                char str[30 + 10];
+                sprintf(str, "%.*g", 30, freq);
+                str[8] = '\0';
+
+                fprintf(file, "%ls,%s", sub_head->val, str);
                 // fprintf(file, "%ls,%.0f", sub_head->val, sub_head->freq);
                 if (sub_head->next_p != NULL)
                 {
                     // fprintf(file, " - ");
                     fprintf(file, ",");
                 }
-            
+
                 sub_head = sub_head->next_p;
             }
 
@@ -168,7 +173,6 @@ void genera_file(FILE *file, Node_t *head)
 }
 
 /*      Programma       */
-
 int main()
 {
     setlocale(LC_ALL, "");

@@ -85,7 +85,7 @@ void sb_appendToInner(Node_t *node, wchar_t val[31])
     temp->next_p = sb_newSubNode(val);
 }
 
-void sb_insertToInner(Node_t *node, wchar_t val[31])
+void sb_insertToInner(Node_t *node, wchar_t val[31], float freq)
 {
     if (node == NULL)
     {
@@ -93,11 +93,11 @@ void sb_insertToInner(Node_t *node, wchar_t val[31])
     }
     SubNode_t *new = sb_newSubNode(val); // Crea un nuovo nodo con il valore fornito
     new->next_p = node->inner_p;   // Imposta il puntatore next_p del nuovo nodo a quello che era il primo nodo della sottolista
-    new->freq = 1;
+    new->freq = freq;
     node->inner_p = new;           // Ora, il nuovo nodo diventa la testa della sottolista
 }
 
-SubNode_t *sb_find(Node_t *head, wchar_t search_word[31])
+Node_t *sb_find(Node_t *head, wchar_t search_word[31])
 {
     while (head != NULL)
     {

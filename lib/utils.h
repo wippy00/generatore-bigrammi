@@ -30,7 +30,7 @@ void magia(Node_t **head_of_list, wchar_t search_word[31], wchar_t insert_word[3
     if (node_found == NULL)
     {
         node_found = sb_append(head_of_list, search_word); // Perchè si così è più veloce, molto più veloce
-        sb_insertToInner(node_found, insert_word);
+        sb_insertToInner(node_found, insert_word, 1);
     }
     else
     {
@@ -51,7 +51,7 @@ void checkAndIncrement(Node_t *node, wchar_t search_word[31])
     SubNode_t *node_found = sb_subFind(node->inner_p, search_word);
     if (node_found == NULL)
     {
-        sb_insertToInner(node, search_word);
+        sb_insertToInner(node, search_word, 1);
     }
     else
     {
@@ -64,7 +64,7 @@ void checkAndIncrement(Node_t *node, wchar_t search_word[31])
  * Opens a file with the specified path and mode.
  *
  * @param path The path of the file to be opened.
- * @param mode The mode in which the file should be opened.
+ * @param mode The mode in which the file should be opened ("w" write , "r" read only) .
  * @return A pointer to the opened file.
  * @throws An error message and exits the program if the file cannot be opened.
  */
