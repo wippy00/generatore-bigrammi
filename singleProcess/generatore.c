@@ -5,7 +5,9 @@
 #include <wchar.h>
 #include <wctype.h>
 
-#include "../lib/list.h"
+#include <math.h>
+
+#include "../lib/bilist.h"
 #include "../lib/sublist.h"
 #include "../lib/utils.h"
 
@@ -18,7 +20,7 @@ Error 02:
 Error 03:
 */
 
-void custom_printSubList(Node_t *head)
+void printSubList_csv(Node_t *head)
 {
     printf("\n\n\n");
 
@@ -56,25 +58,35 @@ void custom_printSubList(Node_t *head)
 }
 
 /*      Funzioni Programma       */
+
+/**
+ * Legge un file e estrae i bigrammi da esso.
+ *
+ * @param file Il file da leggere.
+ * @return Un puntatore alla testa della lista concatenata contenente i bigrammi estratti.
+ */
 Node_t *read_file(FILE *file)
 {
-    Node_t *lista_bigrammi = NULL; // DEVI INIZIALIZZARE A NULL
+    Node_t *lista_bigrammi = NULL;
 
-    int indice_parola = 0;
-    wchar_t character;
-    wchar_t parola[31];
+    int indice_parola = 0; /* Traccia della lunghezza della parola  */
+    wchar_t character;     /* carattere corrente */
+    wchar_t parola[31];    /* buffer per la parola */
     pulisci(parola, 31);
 
-    wchar_t bigramma_parola[31];
+    wchar_t bigramma_parola[31]; /* buffer per la parola del bigramma */
     pulisci(bigramma_parola, 31);
-    float bigramma_numero = 0;
+    float bigramma_numero = 0; /* buffer per il numero del bigramma */
+
+    float sub_counter = 0;
 
     Node_t *head_pointer = NULL; /* Traccia la testa del nodo da dove inizia sottolista */
 
     while ((character = fgetwc(file)) != WEOF)
     {
         character = towlower(character);
-        // se il carattere è una virgola, viene processata la parola
+
+        /* se il carattere è una virgola, viene processata la parola */
         if ((character == ',') && indice_parola > 0)
         {
             parola[indice_parola] = '\0';
@@ -82,6 +94,9 @@ Node_t *read_file(FILE *file)
             if (head_pointer == NULL)
             {
                 head_pointer = sb_append(&lista_bigrammi, parola);
+
+                sub_counter = 0;
+
                 pulisci(&parola, indice_parola);
                 indice_parola = 0;
                 continue;
@@ -107,10 +122,13 @@ Node_t *read_file(FILE *file)
             }
             sb_insertToInner(head_pointer, bigramma_parola, bigramma_numero);
 
+            sub_counter += bigramma_numero;
+
             pulisci(&parola, indice_parola);
             indice_parola = 0;
             bigramma_parola[0] = '\0';
         }
+        /* se il carattere è un a capo, viene inserita la coppia parola-valore e vengono resettate le variabili */
         else if (character == '\n')
         {
             if (swscanf(parola, L"%f", &bigramma_numero) == 1)
@@ -124,16 +142,26 @@ Node_t *read_file(FILE *file)
                 // printf("Errore durante la conversione\n");
             }
             sb_insertToInner(head_pointer, bigramma_parola, bigramma_numero);
+
+            sub_counter += bigramma_numero;
+
+            if (sub_counter + 0.01 < 1)
+            {
+                printf("\nErrore: File csv malformato; La somma delle frequenze è minore di 1: %f\n", sub_counter);
+                return lista_bigrammi;
+            }
+
             head_pointer = NULL;
             bigramma_parola[0] = '\0';
             pulisci(&parola, indice_parola);
             indice_parola = 0;
 
-            // custom_printSubList(lista_bigrammi);
+            // printSubList_csv(lista_bigrammi);
         }
+        /* per qualsiasi altro caso viene aggiunto il carattere al buffer */
         else
         {
-            // se c'è una parola maggiore di 30 caratteri troncala
+            /* se c'è una parola maggiore di 30 caratteri la tronca */
             if (indice_parola > 30)
             {
                 indice_parola = 0;
@@ -155,17 +183,25 @@ Node_t *read_file(FILE *file)
     return lista_bigrammi;
 }
 
+/**
+ * Genera una lista di parole in base ai bigrammi presenti nella lista dei bigrammi fornita.
+ *
+ * @param lista_bigrammi La lista dei bigrammi.
+ * @param n_parole Il numero di parole da generare.
+ * @param parola_iniziale La parola da cui iniziare la generazione delle parole. Se è una stringa vuota, verrà scelta una parola iniziale casuale tra '.', '?', '!'.
+ * @return La lista di parole generate. Se si verifica un errore, viene restituito un valore negativo.
+ */
 nodo_t *genera_parole(Node_t *lista_bigrammi, int n_parole, wchar_t parola_iniziale[31])
 {
     srand(time(0));
-    // srand(100);
+    // srand(0);
 
     int random;
     Node_t *head = NULL;
+    nodo_t *lista_parole = NULL;
 
     if (parola_iniziale == L"")
     {
-
         wchar_t caratteri_iniziali[4] = {L'.', L'?', L'!', '\0'};
         wchar_t scelta[2] = {'\0', '\0'};
         int tentativi[3] = {0, 0, 0};
@@ -184,8 +220,9 @@ nodo_t *genera_parole(Node_t *lista_bigrammi, int n_parole, wchar_t parola_inizi
 
         if (head == NULL)
         {
-            printf("\nIl testo non contiene nessuno dei caratteri di default ( . ? ! ), fornire una parola da cui iniziare\n");
-            return -1;
+            printf("\nErrore: Il testo non contiene nessuno dei caratteri di default ( . ? ! ), fornire una parola da cui iniziare\n");
+            exit(-1);
+            return NULL;
         }
     }
     else
@@ -193,12 +230,12 @@ nodo_t *genera_parole(Node_t *lista_bigrammi, int n_parole, wchar_t parola_inizi
         head = sb_find(lista_bigrammi, parola_iniziale);
         if (head == NULL)
         {
-            printf("\nLa parola: %ls non esiste\n", parola_iniziale);
+            printf("\nErrore: La parola/carattere ' %ls ' non è presente nel testo\n", parola_iniziale);
+            exit(-1);
             return -1;
         }
     }
 
-    nodo_t *lista_parole = NULL;
     SubNode_t *sub_head = NULL;
     float valore = 0;
 
@@ -216,10 +253,23 @@ nodo_t *genera_parole(Node_t *lista_bigrammi, int n_parole, wchar_t parola_inizi
             }
 
             sub_head = sub_head->next_p;
+            if (sub_head == NULL)
+            {
+                printf("\n Round error");
+                return;
+            }
         }
         insert(&lista_parole, sub_head->val);
 
-        head = sb_find(lista_bigrammi , sub_head->val);
+        head = sb_find(lista_bigrammi, sub_head->val);
+
+        if (head == NULL)
+        {
+            head = lista_bigrammi;
+            // printf("\nErrore: Lista malformata; Data la parola: %ls non è possibile generarne un'altra\n", parola_iniziale);
+            // exit(-1);
+            // return lista_parole;
+        }
     }
 
     return lista_parole;
@@ -227,8 +277,70 @@ nodo_t *genera_parole(Node_t *lista_bigrammi, int n_parole, wchar_t parola_inizi
     // printf("numero random: %d\n", caratteri_iniziali[random]);
     // printf("Stringa: %ls\n", caratteri_iniziali);
 }
+
+/**
+ * Funzione per generare un file di testo a partire da una lista concatenata di nodi.
+ *
+ * La funzione prende in input un puntatore a un file e un puntatore al nodo di testa della lista.
+ * Scorre la lista e stampa le parole nel file, con alcune regole specifiche:
+ * - La prima lettera della prima parola viene convertita in maiuscolo e stampata nel file.
+ * - Se una parola è seguita da un carattere di punteggiatura (. ? !), la parola viene stampata nel file,
+ *   seguita dal carattere di punteggiatura e una nuova riga.
+ *   Successivamente, la parola successiva viene convertita in maiuscolo e stampata nel file.
+ * - Altrimenti, la parola viene semplicemente stampata nel file.
+ *
+ * @param file Il puntatore al file in cui scrivere il testo generato.
+ * @param head Il puntatore al nodo di testa della lista concatenata.
+ */
+void genera_file_generatore(FILE *file, nodo_t *head)
+{
+    short unsigned maiusc_flag = 0;
+    nodo_t *next = NULL;
+
+    nodo_t *tail = NULL;
+    head = getTail(head);
+
+    head->val[0] = towupper(head->val[0]);
+    fprintf(file, "%ls", head->val);
+    head = head->prev_p;
+
+    while (head != NULL)
+    {
+        if (head->prev_p != NULL)
+            next = head->prev_p;
+
+        if (next->val[0] == L'.' || next->val[0] == L'?' || next->val[0] == L'!')
+        {
+            /* stampa la parola prima del carattere di punteggiatura */
+            fprintf(file, " %ls", head->val);
+
+            /* avanza al carattere di punteggiatura e lo stampa */
+            if (head->prev_p != NULL)
+                head = head->prev_p;
+            else
+                break;
+            // fprintf (file, "%ls", head->val);
+            fprintf(file, "%ls\n", head->val);
+
+            /* avanza alla parola dopo, mette la maiuscola e stampa la parola */
+            if (head->prev_p != NULL)
+                head = head->prev_p;
+            else
+                break;
+            head->val[0] = towupper(head->val[0]);
+            // fprintf(file, " %ls", head->val);
+            fprintf(file, "%ls", head->val);
+            head = head->prev_p;
+            continue;
+        }
+
+        fprintf(file, " %ls", head->val);
+        head = head->prev_p;
+    }
+}
+
 /*      Main       */
-int main()
+void main_generatore(char input_path[32], char n_words[32], char output_path[32])
 {
     setlocale(LC_ALL, "");
     setlocale(LC_NUMERIC, "en_US.UTF-8");
@@ -239,7 +351,7 @@ int main()
     clock_t begin;
     clock_t end;
 
-    FILE *input_file = open_file("./bigrammi.csv", "r");
+    FILE *input_file = open_file(input_path, "r");
 
     begin = clock();
     lista_bigrammi = read_file(input_file);
@@ -247,17 +359,32 @@ int main()
     printf("\nAnalizzare csv: %fs\n", (double)(end - begin) / CLOCKS_PER_SEC);
 
     // printf("\n");
-    // printSubList(lista_bigrammi);
+    // printSubList_csv(lista_bigrammi);
     // printf("\n");
 
+    int n_words_int = atoi(n_words);
+
     begin = clock();
-    lista_parole = genera_parole(lista_bigrammi, 600000, L".");
+    lista_parole = genera_parole(lista_bigrammi, n_words_int, L".");
     end = clock();
-    printf("\nGeneratore parole: %fs\n", (double)(end - begin) / CLOCKS_PER_SEC);
+    printf("Generatore parole: %fs\n", (double)(end - begin) / CLOCKS_PER_SEC);
 
     // printf("\n");
     // printList(lista_parole);
     // printf("\n");
 
+    FILE *output_file = open_file(output_path, "w");
+
+    begin = clock();
+    genera_file_generatore(output_file, lista_parole);
+    end = clock();
+    printf("Generatore file: %fs\n", (double)(end - begin) / CLOCKS_PER_SEC);
+
+    printf("\nDone\n");
+}
+
+int main()
+{
+    main_generatore("bigrammi.csv", "500", "out.txt");
     return 0;
 }

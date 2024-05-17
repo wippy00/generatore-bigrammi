@@ -92,9 +92,9 @@ void sb_insertToInner(Node_t *node, wchar_t val[31], float freq)
         return; // Se il nodo è nullo, non possiamo aggiungere nulla
     }
     SubNode_t *new = sb_newSubNode(val); // Crea un nuovo nodo con il valore fornito
-    new->next_p = node->inner_p;   // Imposta il puntatore next_p del nuovo nodo a quello che era il primo nodo della sottolista
+    new->next_p = node->inner_p;         // Imposta il puntatore next_p del nuovo nodo a quello che era il primo nodo della sottolista
     new->freq = freq;
-    node->inner_p = new;           // Ora, il nuovo nodo diventa la testa della sottolista
+    node->inner_p = new; // Ora, il nuovo nodo diventa la testa della sottolista
 }
 
 Node_t *sb_find(Node_t *head, wchar_t search_word[31])
@@ -157,40 +157,12 @@ int sb_innerlen(SubNode_t *head)
     int count = 0;
     while (head != NULL)
     {
-        count+=head->freq;
+        count += head->freq;
 
         head = head->next_p;
     }
     return count;
 }
-
-// // Funzione per stampare la lista principale e le relative sottoliste ricorsivamente
-// void printSubListRec(Node_t *head)
-// {
-//     Node_t *temp = head;
-//     printf("\n [ ");
-
-//     while (temp != NULL)
-//     {
-//         printf("%ls", temp->val);
-
-//         // Stampiamo la sottolista, se presente
-//         if (temp->inner_p != NULL)
-//         {
-//             printf(" (");
-//             printSubListRec(temp->inner_p);
-//             printf(")");
-//         }
-
-//         if (temp->next_p != NULL)
-//         {
-//             printf(" -> ");
-//         }
-
-//         temp = temp->next_p;
-//     }
-//     printf(" ]");
-// }
 
 // Funzione per stampare la lista principale e la relativa sottolista
 void printSubList(Node_t *head)
@@ -213,18 +185,14 @@ void printSubList(Node_t *head)
                 {
                     printf(" -> ");
                 }
-
                 sub_head = sub_head->next_p;
             }
-
             printf(")");
         }
-
         if (head->next_p != NULL)
         {
             printf(" -> ");
         }
-
         head = head->next_p;
     }
     printf(" ]");

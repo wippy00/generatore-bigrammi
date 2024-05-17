@@ -1,6 +1,7 @@
 #include <locale.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <float.h>
 
 #include <wchar.h>
@@ -19,6 +20,31 @@ Error 02:
 Error 03:
 */
 
+void removeZero(char *str)
+{
+    if (str[0] == '1' && str[1] == '.' && str[2] == '0')
+    {
+        strcpy(str, "1");
+        return;
+    }
+    for (int i = 7; i >= 3; i--)
+    {
+        char lettera = str[i];
+        int ascii_char = (int)lettera;
+
+        if (ascii_char == 48 || ascii_char == 0)
+        {
+            str[i] = '\0';
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    return;
+}
+
 /*      Funzioni Programma       */
 
 nodo_t *genera_lista(FILE *file)
@@ -33,6 +59,9 @@ nodo_t *genera_lista(FILE *file)
 
     insert(&lista, L".");
 
+    wchar_t prima_parola[31];
+    pulisci(prima_parola, 31);
+
     while ((character = fgetwc(file)) != WEOF)
     {
         character = towlower(character);
@@ -42,6 +71,10 @@ nodo_t *genera_lista(FILE *file)
             parola[indice_parola] = '\0';
 
             insert(&lista, parola);
+            if (prima_parola[0] == '\0')
+            {
+                wcscpy(prima_parola, parola);
+            }
 
             pulisci(&parola, indice_parola);
 
@@ -53,11 +86,19 @@ nodo_t *genera_lista(FILE *file)
             parola[indice_parola] = '\0';
 
             insert(&lista, parola);
+            if (prima_parola[0] == '\0')
+            {
+                wcscpy(prima_parola, parola);
+            }
 
             parola[0] = character;
             parola[1] = '\0';
 
             insert(&lista, parola);
+            if (prima_parola[0] == '\0')
+            {
+                wcscpy(prima_parola, parola);
+            }
 
             pulisci(&parola, indice_parola);
 
@@ -70,6 +111,10 @@ nodo_t *genera_lista(FILE *file)
             indice_parola++;
             parola[indice_parola] = '\0';
             insert(&lista, parola);
+            if (prima_parola[0] == '\0')
+            {
+                wcscpy(prima_parola, parola);
+            }
             pulisci(&parola, indice_parola);
             indice_parola = 0;
         }
@@ -94,6 +139,8 @@ nodo_t *genera_lista(FILE *file)
         indice_parola = 0;
         insert(&lista, parola);
     }
+
+    insert(&lista, prima_parola);
 
     return lista;
 }
@@ -148,23 +195,18 @@ void genera_file(FILE *file, Node_t *head)
                 {
                     freq = 1;
                 }
-
-                /* Stampa un float rimuovendo gli zeri meno significativi*/
-                char str[30 + 10];
-                sprintf(str, "%.*g", 30, freq);
-                str[8] = '\0';
-
+                char str[8];
+                sprintf(str, "%.6f", freq);
+                removeZero(str);
                 fprintf(file, "%ls,%s", sub_head->val, str);
-                // fprintf(file, "%ls,%.0f", sub_head->val, sub_head->freq);
+
                 if (sub_head->next_p != NULL)
                 {
-                    // fprintf(file, " - ");
                     fprintf(file, ",");
                 }
 
                 sub_head = sub_head->next_p;
             }
-
             // fprintf(file, ")\n");
             fprintf(file, "\n");
         }
@@ -173,7 +215,8 @@ void genera_file(FILE *file, Node_t *head)
 }
 
 /*      Programma       */
-int main()
+
+void main_bigrammi(char input_path[32], char output_path[32])
 {
     setlocale(LC_ALL, "");
     setlocale(LC_NUMERIC, "en_US.UTF-8");
@@ -181,7 +224,7 @@ int main()
     nodo_t *lista_parole = NULL;
     Node_t *lista_bigrammi = NULL;
 
-    FILE *input_file = open_file("../test/lotr.txt", "r");
+    FILE *input_file = open_file(input_path, "r");
 
     clock_t begin;
     clock_t end;
@@ -194,11 +237,9 @@ int main()
     begin = clock();
     lista_parole = genera_lista(input_file);
     end = clock();
-    printf("\nGenera Lista: %fs\n", (double)(end - begin) / CLOCKS_PER_SEC);
+    printf("Genera Lista: %fs\n", (double)(end - begin) / CLOCKS_PER_SEC);
 
-    printf("\n");
-    printf("len lista: %d parole", len(lista_parole));
-    printf("\n");
+    printf("\nlen lista: %d parole\n", len(lista_parole));
 
     // printf("\n");
     // printList(lista_parole);
@@ -207,21 +248,28 @@ int main()
     begin = clock();
     lista_bigrammi = genera_bigrammi(lista_parole);
     end = clock();
-    printf("\nGenera bigrammi: %fs\n", (double)(end - begin) / CLOCKS_PER_SEC);
+    printf("Genera bigrammi: %fs\n", (double)(end - begin) / CLOCKS_PER_SEC);
 
     // printf("\n");
     // printSubList(lista_bigrammi);
     // printf("\n");
     // Node_t conta_occorrenze(lista_bigrammi);
 
-    FILE *output_file = open_file("./bigrammi.csv", "w");
+    FILE *output_file = open_file(output_path, "w");
 
     begin = clock();
     genera_file(output_file, lista_bigrammi);
     end = clock();
-    printf("\nGenera file: %fs\n", (double)(end - begin) / CLOCKS_PER_SEC);
+    printf("Genera file: %fs\n", (double)(end - begin) / CLOCKS_PER_SEC);
 
     master_end = clock();
     printf("\nTutto impiega: %fs\n", (double)(master_end - master_begin) / CLOCKS_PER_SEC);
+
+    printf("Done\n");
+}
+int main()
+{
+
+    main_bigrammi("../test/lotr.txt", "bigrammi.csv");
     return 0;
 }
