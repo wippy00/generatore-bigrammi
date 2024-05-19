@@ -145,10 +145,10 @@ Node_t *read_file(FILE *file)
 
             sub_counter += bigramma_numero;
 
-            if (sub_counter + 0.01 < 1)
+            if (sub_counter > 1.000334 || sub_counter < 0.999673 )
             {
-                printf("\nErrore: File csv malformato; La somma delle frequenze è minore di 1: %f\n", sub_counter);
-                return lista_bigrammi;
+                printf("\nErrore: File csv malformato; La somma delle frequenze è diversa da 1 : %f\n", sub_counter);
+                // return lista_bigrammi;
             }
 
             head_pointer = NULL;
@@ -191,16 +191,16 @@ Node_t *read_file(FILE *file)
  * @param parola_iniziale La parola da cui iniziare la generazione delle parole. Se è una stringa vuota, verrà scelta una parola iniziale casuale tra '.', '?', '!'.
  * @return La lista di parole generate. Se si verifica un errore, viene restituito un valore negativo.
  */
-nodo_t *genera_parole(Node_t *lista_bigrammi, int n_parole, wchar_t parola_iniziale[31])
+nodo_t *genera_parole(Node_t *lista_bigrammi, int n_parole, char parola_iniziale[31])
 {
-    srand(time(0));
-    // srand(0);
+    // srand(time(0));
+    srand(0);
 
     int random;
     Node_t *head = NULL;
     nodo_t *lista_parole = NULL;
 
-    if (parola_iniziale == L"")
+    if (wcslen(parola_iniziale) <= 0)
     {
         wchar_t caratteri_iniziali[4] = {L'.', L'?', L'!', '\0'};
         wchar_t scelta[2] = {'\0', '\0'};
@@ -241,11 +241,11 @@ nodo_t *genera_parole(Node_t *lista_bigrammi, int n_parole, wchar_t parola_inizi
 
     for (int i = 0; i < n_parole; i++)
     {
-        random = ((double)rand() / RAND_MAX) * (100 - 0) + 0;
+        random = ((double)rand() / RAND_MAX) * (100000 - 0) + 0;
         sub_head = head->inner_p;
         while (sub_head != NULL)
         {
-            valore += (sub_head->freq * 100);
+            valore += (sub_head->freq * 100000);
             if (valore >= random)
             {
                 valore = 0;
@@ -340,10 +340,13 @@ void genera_file_generatore(FILE *file, nodo_t *head)
 }
 
 /*      Main       */
-void main_generatore(char input_path[32], char n_words[32], char output_path[32])
+void main_generatore(char input_path[32], char n_words[32], char search_word[31],char output_path[32])
 {
     setlocale(LC_ALL, "");
     setlocale(LC_NUMERIC, "en_US.UTF-8");
+
+    // printf("dentro main generatore parola wchar_t: %ls",search_word);
+    // printf("dentro main generatore parola char: %s",search_word);
 
     nodo_t *lista_parole = NULL;
     Node_t *lista_bigrammi = NULL;
@@ -365,7 +368,7 @@ void main_generatore(char input_path[32], char n_words[32], char output_path[32]
     int n_words_int = atoi(n_words);
 
     begin = clock();
-    lista_parole = genera_parole(lista_bigrammi, n_words_int, L".");
+    lista_parole = genera_parole(lista_bigrammi, n_words_int, search_word);
     end = clock();
     printf("Generatore parole: %fs\n", (double)(end - begin) / CLOCKS_PER_SEC);
 
@@ -382,9 +385,9 @@ void main_generatore(char input_path[32], char n_words[32], char output_path[32]
 
     printf("\nDone\n");
 }
-
-int main()
-{
-    main_generatore("bigrammi.csv", "500", "out.txt");
-    return 0;
-}
+ 
+// int main()
+// {
+//     main_generatore("bigrammi.csv", "10", L"","out.txt");
+//     return 0;
+// }

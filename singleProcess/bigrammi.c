@@ -7,7 +7,7 @@
 #include <wchar.h>
 #include <wctype.h>
 
-#include "../lib/list.h"
+#include "../lib/bilist.h"
 #include "../lib/sublist.h"
 #include "../lib/utils.h"
 
@@ -20,6 +20,11 @@ Error 02:
 Error 03:
 */
 
+/**
+ * Rimuove gli zeri inutili da una stringa.
+ * 
+ * @param str La stringa da modificare.
+ */
 void removeZero(char *str)
 {
     if (str[0] == '1' && str[1] == '.' && str[2] == '0')
@@ -47,6 +52,12 @@ void removeZero(char *str)
 
 /*      Funzioni Programma       */
 
+/**
+ * Genera una lista di parole a partire da un file.
+ * 
+ * @param file Il file da cui leggere le parole.
+ * @return Un puntatore alla testa della lista di parole generate.
+ */
 nodo_t *genera_lista(FILE *file)
 {
     int indice_parola = 0;
@@ -267,9 +278,8 @@ void main_bigrammi(char input_path[32], char output_path[32])
 
     printf("Done\n");
 }
-int main()
-{
-
-    main_bigrammi("../test/lotr.txt", "bigrammi.csv");
-    return 0;
-}
+// int main()
+// {
+//     main_bigrammi("../test/lotr.txt", "bigrammi.csv");
+//     return 0;
+// }

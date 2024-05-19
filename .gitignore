@@ -55,8 +55,13 @@ Mkfile.old
 dkms.conf
 
 # TempCode
+tempCodeRunnerFile.c
 tempCodeRunnerFile
 
 # Test Folder and file
 test.c
 test/
+
+#output/input test file
+*.csv
+*.txt
