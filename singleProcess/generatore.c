@@ -191,7 +191,7 @@ Node_t *read_file(FILE *file)
  * @param parola_iniziale La parola da cui iniziare la generazione delle parole. Se è una stringa vuota, verrà scelta una parola iniziale casuale tra '.', '?', '!'.
  * @return La lista di parole generate. Se si verifica un errore, viene restituito un valore negativo.
  */
-nodo_t *genera_parole(Node_t *lista_bigrammi, int n_parole, char parola_iniziale[31])
+nodo_t *genera_parole(Node_t *lista_bigrammi, int n_parole, wchar_t *parola_iniziale)
 {
     // srand(time(0));
     srand(0);
@@ -230,7 +230,7 @@ nodo_t *genera_parole(Node_t *lista_bigrammi, int n_parole, char parola_iniziale
         head = sb_find(lista_bigrammi, parola_iniziale);
         if (head == NULL)
         {
-            printf("\nErrore: La parola/carattere ' %ls ' non è presente nel testo\n", parola_iniziale);
+            printf("\nErrore: La parola/carattere '%ls' non è presente nel testo\n", parola_iniziale);
             exit(-1);
             return -1;
         }
@@ -340,13 +340,10 @@ void genera_file_generatore(FILE *file, nodo_t *head)
 }
 
 /*      Main       */
-void main_generatore(char input_path[32], char n_words[32], char search_word[31],char output_path[32])
+void main_generatore(char *input_path, char *n_words, wchar_t *search_word, char *output_path)
 {
     setlocale(LC_ALL, "");
     setlocale(LC_NUMERIC, "en_US.UTF-8");
-
-    // printf("dentro main generatore parola wchar_t: %ls",search_word);
-    // printf("dentro main generatore parola char: %s",search_word);
 
     nodo_t *lista_parole = NULL;
     Node_t *lista_bigrammi = NULL;

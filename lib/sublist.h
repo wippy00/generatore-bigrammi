@@ -101,11 +101,6 @@ Node_t *sb_find(Node_t *head, wchar_t search_word[31])
 {
     while (head != NULL)
     {
-        wchar_t parola_cerca[31];
-        wchar_t parola_lista[31];
-        wcscpy(parola_cerca, search_word);
-        wcscpy(parola_lista, head->val);
-
         if (wcscmp(search_word, head->val) == 0)
         {
             return head;

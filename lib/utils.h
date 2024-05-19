@@ -39,7 +39,7 @@ void checkAndIncrement(Node_t *node, wchar_t search_word[31])
     return;
 }
 
-FILE *open_file(char path[32], char mode[4])
+FILE *open_file(char *path, char mode[4])
 {
     FILE *pointer_file = fopen(path, mode);
     if (pointer_file == NULL)

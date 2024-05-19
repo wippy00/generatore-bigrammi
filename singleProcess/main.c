@@ -15,12 +15,13 @@ void usage(const char *progname)
     fprintf(stderr, "\nCommands:\n");
     fprintf(stderr, "\t-t task\n");
     fprintf(stderr, "\t-i input file\n");
-    fprintf(stderr, "\t-o output file\n");
-    fprintf(stderr, "\t-n (only for task: gen) number of words to generate\n");
-    fprintf(stderr, "\t-w (only for task: gen) (optional) starting word for generate the new text\n");
+    fprintf(stderr, "\t-o [optional] output file; WARNING if omitted overwrites out.csv and/or text.txt\n");
+    fprintf(stderr, "\t-n (for task: gen & craft) number of words to generate\n");
+    fprintf(stderr, "\t-w [optional] (for task: gen & craft) starting word for generate the new text\n");
     fprintf(stderr, "\nTask Type:\n");
     fprintf(stderr, "\t'scan' for scanning scan a txt file and receive a table with the frequencies of the words in the text\n");
     fprintf(stderr, "\t'gen' for generating a text with n words randomly chosen based on their frequency from the csv file\n");
+    fprintf(stderr, "\t'craft' combine gen and scan to create a frequency table and random text\n");
     exit(EXIT_FAILURE);
 }
 
@@ -32,7 +33,7 @@ int main(int argc, char **argv[])
     char *output_file = NULL;
     char *number_words = NULL;
     // wchar_t *search_word = NULL;
-    char *search_word = NULL;
+    wchar_t *search_word = NULL;
 
     while ((options = getopt(argc, argv, "t:i:o:n:w:")) != -1)
     {
@@ -40,7 +41,7 @@ int main(int argc, char **argv[])
         {
         case 't':
             task_name = optarg;
-            if (strcmp(task_name, "scan") != 0 && strcmp(task_name, "gen") != 0)
+            if (strcmp(task_name, "scan") != 0 && strcmp(task_name, "gen") != 0 && strcmp(task_name, "craft") != 0)
             {
                 fprintf(stderr, "Invalid task name: %s\n", task_name);
                 usage(argv[0]);
@@ -64,7 +65,7 @@ int main(int argc, char **argv[])
         }
     }
 
-    if (task_name == NULL || input_file == NULL || output_file == NULL)
+    if (task_name == NULL || input_file == NULL)
     {
         usage(argv[0]);
     }
@@ -76,6 +77,13 @@ int main(int argc, char **argv[])
     // Eseguire il compito richiesto
     if (strcmp(task_name, "scan") == 0)
     {
+        /* se non viene fornito un nome del file di output verrà generato/sovrascritto il file out.csv */
+        if (output_file == NULL)
+        {
+            char string[10];
+            strcpy(string, "out.csv");
+            output_file = &string;
+        }
         main_bigrammi(input_file, output_file);
     }
 
@@ -83,9 +91,18 @@ int main(int argc, char **argv[])
     {
         if (number_words == NULL)
         {
-            fprintf(stderr, "-n (only for task: gen) number of words to generate [is required]\n");
+            fprintf(stderr, "-n (for task: gen & craft) number of words to generate [is required]\n");
             return;
         }
+        
+        /* se non viene fornito un nome del file di output verrà generato/sovrascritto il file text.txt */
+        if (output_file == NULL)
+        {
+            char string[10];
+            strcpy(string, "text.txt");
+            output_file = &string;
+        }
+
         if (search_word == NULL)
         {
             // printf("\n\n parola-nulla: %s\n\n", search_word);
@@ -93,8 +110,37 @@ int main(int argc, char **argv[])
         }
         else
         {
-            // printf("\n\n parola-non nulla: %s\n\n", search_word);
-            main_generatore(input_file, number_words, search_word, output_file);
+            wchar_t wchar[31];
+            swprintf(wchar, 31, L"%hs", search_word);
+            main_generatore(input_file, number_words, wchar, output_file);
+        }
+    }
+    if (strcmp(task_name, "craft") == 0)
+    {
+        if (output_file == NULL)
+        {
+            char string[10];
+            strcpy(string, "text.txt");
+            output_file = &string;
+        }
+
+        main_bigrammi(input_file, "out.csv");
+
+        if (number_words == NULL)
+        {
+            fprintf(stderr, "-n (for task: gen & craft) number of words to generate [is required]\n");
+            return;
+        }
+        if (search_word == NULL)
+        {
+            // printf("\n\n parola-nulla: %s\n\n", search_word);
+            main_generatore("out.csv", number_words, L"", output_file);
+        }
+        else
+        {
+            wchar_t wchar[31];
+            swprintf(wchar, 31, L"%hs", search_word);
+            main_generatore("out.csv", number_words, wchar, output_file);
         }
     }
 

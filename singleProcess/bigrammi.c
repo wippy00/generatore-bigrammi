@@ -227,7 +227,7 @@ void genera_file(FILE *file, Node_t *head)
 
 /*      Programma       */
 
-void main_bigrammi(char input_path[32], char output_path[32])
+void main_bigrammi(char *input_path, char *output_path)
 {
     setlocale(LC_ALL, "");
     setlocale(LC_NUMERIC, "en_US.UTF-8");
@@ -266,7 +266,7 @@ void main_bigrammi(char input_path[32], char output_path[32])
     // printf("\n");
     // Node_t conta_occorrenze(lista_bigrammi);
 
-    FILE *output_file = open_file(output_path, "w");
+    FILE *output_file = open_file(output_path, "w+");
 
     begin = clock();
     genera_file(output_file, lista_bigrammi);
