@@ -123,14 +123,14 @@ int main(int argc, char **argv[])
             strcpy(string, "text.txt");
             output_file = &string;
         }
-
-        main_bigrammi(input_file, "out.csv");
-
         if (number_words == NULL)
         {
             fprintf(stderr, "-n (for task: gen & craft) number of words to generate [is required]\n");
             return;
         }
+        
+        main_bigrammi(input_file, "out.csv");
+        
         if (search_word == NULL)
         {
             // printf("\n\n parola-nulla: %s\n\n", search_word);
