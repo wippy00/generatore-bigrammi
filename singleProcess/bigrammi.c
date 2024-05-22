@@ -68,7 +68,7 @@ nodo_t *genera_lista(FILE *file)
 
     nodo_t *lista = NULL; // DEVI INIZIALIZZARE A NULL
 
-    insert(&lista, L".");
+    // insert(&lista, L".");
 
     wchar_t prima_parola[31];
     pulisci(prima_parola, 31);
