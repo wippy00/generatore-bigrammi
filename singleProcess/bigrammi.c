@@ -250,19 +250,11 @@ void main_bigrammi(char *input_path, char *output_path)
 
     printf("\nlen lista: %d parole\n", len(lista_parole));
 
-    // printf("\n");
-    // printList(lista_parole);
-    // printf("\n");
 
     begin = clock();
     lista_bigrammi = genera_bigrammi(lista_parole);
     end = clock();
     printf("Genera bigrammi: %fs\n", (double)(end - begin) / CLOCKS_PER_SEC);
-
-    // printf("\n");
-    // printSubList(lista_bigrammi);
-    // printf("\n");
-    // Node_t conta_occorrenze(lista_bigrammi);
 
     FILE *output_file = open_file(output_path, "w+");
 

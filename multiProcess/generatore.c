@@ -384,7 +384,11 @@ void main_generatore(char *input_path, char *n_words, wchar_t *search_word, char
             begin = clock();
             genera_file_generatore(output_file, lista_parole);
             end = clock();
+            
+            fclose(output_file);
+
             printf("Generatore file: %fs\n", (double)(end - begin) / CLOCKS_PER_SEC);
+            printf("\nDone\n");
             exit(0);
         }
         else

@@ -268,6 +268,9 @@ void main_bigrammi(char *input_path, char *output_path)
             begin = clock();
             genera_file(output_file, lista_bigrammi);
             end = clock();
+
+            fclose(output_file);
+
             printf("Genera file: %fs\n", (double)(end - begin) / CLOCKS_PER_SEC);
             exit(0);
         }
