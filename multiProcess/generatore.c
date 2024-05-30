@@ -14,56 +14,49 @@
 /* # Test only */
 #include <time.h>
 
-/*
-Error 01: Errore apertura file
-Error 02:
-Error 03:
-*/
+// void printSubList_csv(Node_t *head)
+// {
+//     printf("\n\n\n");
 
-void printSubList_csv(Node_t *head)
-{
-    printf("\n\n\n");
+//     while (head != NULL)
+//     {
+//         printf("%ls", head->val);
 
-    while (head != NULL)
-    {
-        printf("%ls", head->val);
+//         // Stampiamo la sottolista, se presente
+//         if (head->inner_p != NULL)
+//         {
+//             SubNode_t *sub_head = head->inner_p;
+//             printf(" (");
+//             while (sub_head != NULL)
+//             {
+//                 printf("%ls %.4f", sub_head->val, sub_head->freq);
+//                 if (sub_head->next_p != NULL)
+//                 {
+//                     printf(" -> ");
+//                 }
 
-        // Stampiamo la sottolista, se presente
-        if (head->inner_p != NULL)
-        {
-            SubNode_t *sub_head = head->inner_p;
-            printf(" (");
-            while (sub_head != NULL)
-            {
-                printf("%ls %.4f", sub_head->val, sub_head->freq);
-                if (sub_head->next_p != NULL)
-                {
-                    printf(" -> ");
-                }
+//                 sub_head = sub_head->next_p;
+//             }
 
-                sub_head = sub_head->next_p;
-            }
+//             printf(")");
+//         }
 
-            printf(")");
-        }
+//         if (head->next_p != NULL)
+//         {
+//             printf("\n");
+//         }
 
-        if (head->next_p != NULL)
-        {
-            printf("\n");
-        }
+//         head = head->next_p;
+//     }
+//     printf("\n\n");
+// }
 
-        head = head->next_p;
-    }
-    printf("\n\n");
-}
+
 
 /*      Funzioni Programma       */
 
-/**
+/*
  * Legge un file e estrae i bigrammi da esso.
- *
- * @param file Il file da leggere.
- * @return Un puntatore alla testa della lista concatenata contenente i bigrammi estratti.
  */
 Node_t *read_file(FILE *file)
 {
@@ -158,6 +151,7 @@ Node_t *read_file(FILE *file)
 
             // printSubList_csv(lista_bigrammi);
         }
+
         /* per qualsiasi altro caso viene aggiunto il carattere al buffer */
         else
         {
@@ -185,11 +179,7 @@ Node_t *read_file(FILE *file)
 
 /**
  * Genera una lista di parole in base ai bigrammi presenti nella lista dei bigrammi fornita.
- *
- * @param lista_bigrammi La lista dei bigrammi.
- * @param n_parole Il numero di parole da generare.
- * @param parola_iniziale La parola da cui iniziare la generazione delle parole. Se è una stringa vuota, verrà scelta una parola iniziale casuale tra '.', '?', '!'.
- * @return La lista di parole generate. Se si verifica un errore, viene restituito un valore negativo.
+ * Data una parola da cui iniziare, la generazione delle parole comincerà da lì, altrimenti verrà scelta una parola iniziale casuale tra '.', '?', '!'.
  */
 nodo_t *genera_parole(Node_t *lista_bigrammi, int n_parole, wchar_t *parola_iniziale)
 {
@@ -280,8 +270,8 @@ nodo_t *genera_parole(Node_t *lista_bigrammi, int n_parole, wchar_t *parola_iniz
     // printf("Stringa: %ls\n", caratteri_iniziali);
 }
 
-/**
- * Funzione per generare un file di testo a partire da una lista concatenata di nodi.
+/*
+ * Funzione per generare un file di testo a partire da una lista di bigrammi.
  *
  * La funzione prende in input un puntatore a un file e un puntatore al nodo di testa della lista.
  * Scorre la lista e stampa le parole nel file, con alcune regole specifiche:
@@ -291,8 +281,6 @@ nodo_t *genera_parole(Node_t *lista_bigrammi, int n_parole, wchar_t *parola_iniz
  *   Successivamente, la parola successiva viene convertita in maiuscolo e stampata nel file.
  * - Altrimenti, la parola viene semplicemente stampata nel file.
  *
- * @param file Il puntatore al file in cui scrivere il testo generato.
- * @param head Il puntatore al nodo di testa della lista concatenata.
  */
 void genera_file_generatore(FILE *file, nodo_t *head)
 {

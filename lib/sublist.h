@@ -5,6 +5,14 @@
 #include <stdlib.h>
 #include <wchar.h>
 
+/*
+* La libreria "sublist.h" implementa una lista di sottliste in linguaggio C.
+* Utilizza una struct Node_t per rappresentare un nodo della lista, e una struct SubNode_t per rappresentare un nodo della sottolista.
+* Node_t contiene un campo val che contiene una stringa di caratteri wide (wchar_t) e due puntatori, uno al nodo successivo e uno al nodo della sottolista.
+* SubNode_t contiene un campo val che contiene una stringa di caratteri wide (wchar_t), un campo freq che contiene un valore float e un puntatore al prossimo nodo della sottolista.
+*/
+
+
 typedef struct Node_t
 {
     wchar_t val[31];
@@ -19,7 +27,9 @@ typedef struct SubNode_t
     struct SubNode_t *next_p;
 } SubNode_t;
 
-// Funzione per creare un nuovo nodo
+/* 
+* Funzione per creare un nuovo nodo
+*/
 Node_t *sb_newNode(wchar_t val[31])
 {
     Node_t *new = (Node_t *)malloc(sizeof(Node_t));
@@ -29,6 +39,9 @@ Node_t *sb_newNode(wchar_t val[31])
     return new;
 }
 
+/* 
+* Funzione per creare un nuovo sottonodo
+*/
 SubNode_t *sb_newSubNode(wchar_t val[31])
 {
     SubNode_t *new = (SubNode_t *)malloc(sizeof(SubNode_t));
@@ -38,7 +51,9 @@ SubNode_t *sb_newSubNode(wchar_t val[31])
     return new;
 }
 
-// Funzione per aggiungere un nodo alla fine della lista principale
+/* 
+* Funzione per appendere un nodo alla coda della lista principale
+*/
 Node_t *sb_append(Node_t **head, wchar_t val[31])
 {
     Node_t *new = sb_newNode(val);
@@ -56,7 +71,9 @@ Node_t *sb_append(Node_t **head, wchar_t val[31])
     return new;
 }
 
-// Funzione per aggiungere un nodo all'inizio della lista principale
+/* 
+* Funzione per aggiungere un nodo alla tesa della lista principale
+*/
 Node_t *sb_insert(Node_t **head, wchar_t val[31])
 {
     Node_t *new = sb_newNode(val);
@@ -65,7 +82,9 @@ Node_t *sb_insert(Node_t **head, wchar_t val[31])
     return new;
 }
 
-// Funzione per aggiungere un nodo alla sottolista di un nodo specifico
+/* 
+* Funzione per appendere un nodo alla sottolista di un nodo specifico
+*/
 void sb_appendToInner(Node_t *node, wchar_t val[31])
 {
     if (node == NULL)
@@ -85,6 +104,9 @@ void sb_appendToInner(Node_t *node, wchar_t val[31])
     temp->next_p = sb_newSubNode(val);
 }
 
+/* 
+* Funzione per aggiungere un nodo alla sottolista di un nodo specifico
+*/
 void sb_insertToInner(Node_t *node, wchar_t val[31], float freq)
 {
     if (node == NULL)
@@ -97,6 +119,9 @@ void sb_insertToInner(Node_t *node, wchar_t val[31], float freq)
     node->inner_p = new; // Ora, il nuovo nodo diventa la testa della sottolista
 }
 
+/*
+* Funzione per cercare un nodo nella lista principale
+*/
 Node_t *sb_find(Node_t *head, wchar_t search_word[31])
 {
     while (head != NULL)
@@ -115,6 +140,9 @@ Node_t *sb_find(Node_t *head, wchar_t search_word[31])
     return NULL;
 }
 
+/*
+* Funzione per cercare un nodo nella sottolista di un nodo specifico
+*/
 SubNode_t *sb_subFind(SubNode_t *head, wchar_t search_word[31])
 {
     while (head != NULL)
@@ -129,6 +157,9 @@ SubNode_t *sb_subFind(SubNode_t *head, wchar_t search_word[31])
     return NULL;
 }
 
+/*
+* Funzione per cercare un nodo nella sottolista di un nodo specifico
+*/
 void sb_findInsert(Node_t **head_pointer, wchar_t search_word[31], wchar_t insert_word[31])
 {
     Node_t *head = *head_pointer;
@@ -144,6 +175,9 @@ void sb_findInsert(Node_t **head_pointer, wchar_t search_word[31], wchar_t inser
     return;
 }
 
+/*
+* Funzione per contare il numero di nodi nella lista principale
+*/
 int sb_len(Node_t *head)
 {
     int count = 0;
@@ -156,6 +190,9 @@ int sb_len(Node_t *head)
     return count;
 }
 
+/*
+* Funzione per contare il numero di nodi nella sottolista di un nodo specifico
+*/
 int sb_innerlen(SubNode_t *head)
 {
     int count = 0;
@@ -168,7 +205,10 @@ int sb_innerlen(SubNode_t *head)
     return count;
 }
 
-// Funzione per stampare la lista principale e la relativa sottolista
+
+/*
+* Funzione per stampare la lista principale e la relativa sottolista
+*/
 void printSubList(Node_t *head)
 {
     printf("\n [ ");
