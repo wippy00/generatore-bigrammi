@@ -1,16 +1,13 @@
 COMPILER = gcc
-CFLAGS = -Wall -Wextra -O2 -w
+CFLAGS = -w
 
 all:
-    @echo "Specifica la versione del programma: 'make single' o 'make multi'"
+	@echo "Specifica la versione del programma: 'make mono' o 'make multi'"
 
-single: p_singolo
-p_singolo: processoSingolo.c
-    $(COMPILER) $(CFLAGS) -o main_single singleProcess/main.c
-    @echo "Compilato singleProcess/main.c come main_single"
+mono:
+	$(COMPILER) $(CFLAGS) -o mono monoProcess/main.c
+	@echo "Compilato monoProcess/main.c come mono"
 
-
-multi: p_multi
-p_multi: processoMultiplo.c
-    $(COMPILER) $(CFLAGS) -o main_multi multiProcess/main.c
-    @echo "Compilato multiProcess/main.c come main_multi"
+multi:
+	$(COMPILER) $(CFLAGS) -o multi multiProcess/main.c
+	@echo "Compilato multiProcess/main.c come multi"

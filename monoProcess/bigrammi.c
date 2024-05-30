@@ -14,16 +14,9 @@
 /* # Test only */
 #include <time.h>
 
-/*
-Error 01: Errore apertura file
-Error 02:
-Error 03:
-*/
 
-/**
- * Rimuove gli zeri inutili da una stringa.
- * 
- * @param str La stringa da modificare.
+/*
+ * Rimuove gli zeri non significativi da una stringa.
  */
 void removeZero(char *str)
 {
@@ -52,12 +45,14 @@ void removeZero(char *str)
 
 /*      Funzioni Programma       */
 
-/**
- * Genera una lista di parole a partire da un file.
- * 
- * @param file Il file da cui leggere le parole.
- * @return Un puntatore alla testa della lista di parole generate.
+
+/*
+ * Genera una lista di parole da un file.
+ *
+ * Questa funzione legge i caratteri dal file e le inserisce nella lista.
+ * Ogni parola termina con uno spazio, un carattere di nuova riga o un segno di punteggiatura (!, ? , .).
  */
+
 nodo_t *genera_lista(FILE *file)
 {
     int indice_parola = 0;
@@ -156,6 +151,14 @@ nodo_t *genera_lista(FILE *file)
     return lista;
 }
 
+
+/*
+ * Genera una lista di bigrammi data una lista di parole.
+ *
+ * Per ogni parola della lista controlla se questa è presente nella lista dei bigrammi.
+ * Se la parola non è presente, aggiunge la parola nella lista.
+ * Se la parola è già presente, cerca dov'è la parola nella lista e la aggiunge alla sottolista.
+ */
 Node_t *genera_bigrammi(nodo_t *lista_parole)
 {
     Node_t *lista_bigrammi = NULL;
@@ -171,14 +174,18 @@ Node_t *genera_bigrammi(nodo_t *lista_parole)
             lista_parole = lista_parole->next_p;
             continue;
         }
-        magia(&lista_bigrammi, lista_parole->val, buffer);
+        find_or_insert_word(&lista_bigrammi, lista_parole->val, buffer);
         wcscpy(buffer, lista_parole->val);
         lista_parole = lista_parole->next_p;
     }
     return lista_bigrammi;
     // printf("%ls %ls \n", lista_parole->val, buffer);
 }
-
+/*
+ * Genera un file con il contenuto della lista dei bigrammi.
+ * Ogni nodo nella lista di bigrammi rappresenta una parola e ogni nodo può avere un elenco di altre parole interne con la loro frequenza
+ * La funzione conta quanti nodi sono presenti nella sotto lista e calcola la frequenza di ogni parola dividendo la frequenza totale (della parola)  il numero di nodi.
+ */
 void genera_file(FILE *file, Node_t *head)
 {
     SubNode_t *sub_head = NULL;

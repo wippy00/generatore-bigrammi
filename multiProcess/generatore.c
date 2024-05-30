@@ -51,8 +51,6 @@
 //     printf("\n\n");
 // }
 
-
-
 /*      Funzioni Programma       */
 
 /*
@@ -75,12 +73,14 @@ Node_t *read_file(FILE *file)
 
     Node_t *head_pointer = NULL; /* Traccia la testa del nodo da dove inizia sottolista */
 
+    int contatore_riga = 0;
+
     while ((character = fgetwc(file)) != WEOF)
     {
         character = towlower(character);
 
         /* se il carattere è una virgola, viene processata la parola */
-        if ((character == ',') && indice_parola > 0)
+        if ((character == ','))
         {
             parola[indice_parola] = '\0';
 
@@ -124,6 +124,7 @@ Node_t *read_file(FILE *file)
         /* se il carattere è un a capo, viene inserita la coppia parola-valore e vengono resettate le variabili */
         else if (character == '\n')
         {
+            contatore_riga++;
             if (swscanf(parola, L"%f", &bigramma_numero) == 1)
             {
                 // Conversione riuscita, stampa il valore float
@@ -138,9 +139,10 @@ Node_t *read_file(FILE *file)
 
             sub_counter += bigramma_numero;
 
-            if (sub_counter > 1.000334 || sub_counter < 0.999673 )
+            if (sub_counter > 1.000334 || sub_counter < 0.999673)
             {
                 printf("\nErrore: File csv malformato; La somma delle frequenze è diversa da 1 : %f\n", sub_counter);
+                printf("\n RIGA:  %d\n", contatore_riga);
                 // return lista_bigrammi;
             }
 
@@ -148,6 +150,7 @@ Node_t *read_file(FILE *file)
             bigramma_parola[0] = '\0';
             pulisci(&parola, indice_parola);
             indice_parola = 0;
+            sub_counter = 0;
 
             // printSubList_csv(lista_bigrammi);
         }
@@ -174,6 +177,7 @@ Node_t *read_file(FILE *file)
     //     process(&lista, parola);
     // }
 
+    // printSubList_csv(lista_bigrammi);
     return lista_bigrammi;
 }
 
@@ -216,7 +220,7 @@ nodo_t *genera_parole(Node_t *lista_bigrammi, int n_parole, wchar_t *parola_iniz
         }
     }
     else
-    {   
+    {
         toLowerCase(parola_iniziale);
 
         head = sb_find(lista_bigrammi, parola_iniziale);
@@ -350,7 +354,7 @@ void main_generatore(char *input_path, char *n_words, wchar_t *search_word, char
     lista_bigrammi = read_file(input_file);
     end = clock();
     printf("\nAnalizzare csv: %fs\n", (double)(end - begin) / CLOCKS_PER_SEC);
-    
+
     pid1 = fork();
 
     // printf("pid1: %d\n ",pid1);
@@ -372,7 +376,7 @@ void main_generatore(char *input_path, char *n_words, wchar_t *search_word, char
             begin = clock();
             genera_file_generatore(output_file, lista_parole);
             end = clock();
-            
+
             fclose(output_file);
 
             printf("Generatore file: %fs\n", (double)(end - begin) / CLOCKS_PER_SEC);
@@ -390,9 +394,9 @@ void main_generatore(char *input_path, char *n_words, wchar_t *search_word, char
         wait(NULL);
     }
 }
- 
+
 // int main()
 // {
-//     main_generatore("out.csv", "100", L"Hitaghi","out.txt");
+//     main_generatore("../out.csv", "100", L"Hitaghi", "../out.txt");
 //     return 0;
 // }
