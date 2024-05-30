@@ -100,7 +100,11 @@ void sb_insertToInner(Node_t *node, wchar_t val[31], float freq)
 Node_t *sb_find(Node_t *head, wchar_t search_word[31])
 {
     while (head != NULL)
-    {
+    {   
+        // printf("scelta: %ls ", search_word);
+        // printf("%d ", wcscmp(search_word, head->val));
+        // printf("corrente:%ls \n", head->val);
+        
         if (wcscmp(search_word, head->val) == 0)
         {
             return head;

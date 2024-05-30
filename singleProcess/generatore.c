@@ -360,9 +360,6 @@ void main_generatore(char *input_path, char *n_words, wchar_t *search_word, char
     end = clock();
     printf("\nAnalizzare csv: %fs\n", (double)(end - begin) / CLOCKS_PER_SEC);
 
-    // printf("\n");
-    // printSubList_csv(lista_bigrammi);
-    // printf("\n");
 
     int n_words_int = atoi(n_words);
 
@@ -371,15 +368,14 @@ void main_generatore(char *input_path, char *n_words, wchar_t *search_word, char
     end = clock();
     printf("Generatore parole: %fs\n", (double)(end - begin) / CLOCKS_PER_SEC);
 
-    // printf("\n");
-    // printList(lista_parole);
-    // printf("\n");
-
     FILE *output_file = open_file(output_path, "w");
 
     begin = clock();
     genera_file_generatore(output_file, lista_parole);
     end = clock();
+    
+    fclose(output_file);
+
     printf("Generatore file: %fs\n", (double)(end - begin) / CLOCKS_PER_SEC);
 
     printf("\nDone\n");
@@ -387,6 +383,6 @@ void main_generatore(char *input_path, char *n_words, wchar_t *search_word, char
  
 // int main()
 // {
-//     main_generatore("bigrammi.csv", "10", L"","out.txt");
+//     main_generatore("out.csv", "10", L"","out.txt");
 //     return 0;
 // }

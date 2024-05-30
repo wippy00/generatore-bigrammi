@@ -190,37 +190,40 @@ void genera_file(FILE *file, Node_t *head)
         fprintf(file, "%ls", head->val);
 
         // Stampiamo la sottolista, se presente
-        if (head->inner_p != NULL)
+        if (head->inner_p == NULL)
         {
-            SubNode_t *sub_head = head->inner_p;
-            // fprintf(file, "  (");
-            fprintf(file, ",");
-            len = sb_innerlen(sub_head);
-            while (sub_head != NULL)
-            {
-                if (len > 1)
-                {
-                    freq = (float)sub_head->freq / len;
-                }
-                else
-                {
-                    freq = 1;
-                }
-                char str[8];
-                sprintf(str, "%.6f", freq);
-                removeZero(str);
-                fprintf(file, "%ls,%s", sub_head->val, str);
-
-                if (sub_head->next_p != NULL)
-                {
-                    fprintf(file, ",");
-                }
-
-                sub_head = sub_head->next_p;
-            }
-            // fprintf(file, ")\n");
-            fprintf(file, "\n");
+            continue;
         }
+        SubNode_t *sub_head = head->inner_p;
+        // fprintf(file, "  (");
+        fprintf(file, ",");
+        len = sb_innerlen(sub_head);
+        while (sub_head != NULL)
+        {
+            if (len > 1)
+            {
+                freq = (float)sub_head->freq / len;
+            }
+            else
+            {
+                freq = 1;
+            }
+
+            char str[8];
+            sprintf(str, "%.6f", freq);
+            removeZero(str);
+            fprintf(file, "%ls,%s", sub_head->val, str);
+
+            if (sub_head->next_p != NULL)
+            {
+                fprintf(file, ",");
+            }
+
+            sub_head = sub_head->next_p;
+        }
+        // fprintf(file, ")\n");
+        fprintf(file, "\n");
+
         head = head->next_p;
     }
 }
@@ -239,11 +242,6 @@ void main_bigrammi(char *input_path, char *output_path)
 
     clock_t begin;
     clock_t end;
-
-    clock_t master_begin;
-    clock_t master_end;
-
-    master_begin = clock();
 
     begin = clock();
     lista_parole = genera_lista(input_file);
@@ -271,12 +269,11 @@ void main_bigrammi(char *input_path, char *output_path)
     begin = clock();
     genera_file(output_file, lista_bigrammi);
     end = clock();
+    
+    fclose(output_file);
+    
     printf("Genera file: %fs\n", (double)(end - begin) / CLOCKS_PER_SEC);
 
-    master_end = clock();
-    printf("\nTutto impiega: %fs\n", (double)(master_end - master_begin) / CLOCKS_PER_SEC);
-
-    printf("Done\n");
 }
 // int main()
 // {
