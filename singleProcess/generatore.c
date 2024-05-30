@@ -227,6 +227,8 @@ nodo_t *genera_parole(Node_t *lista_bigrammi, int n_parole, wchar_t *parola_iniz
     }
     else
     {
+        toLowerCase(parola_iniziale);
+
         head = sb_find(lista_bigrammi, parola_iniziale);
         if (head == NULL)
         {

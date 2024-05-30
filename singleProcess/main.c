@@ -86,8 +86,7 @@ int main(int argc, char **argv[])
         }
         main_bigrammi(input_file, output_file);
     }
-
-    if (strcmp(task_name, "gen") == 0)
+    else if (strcmp(task_name, "gen") == 0)
     {
         if (number_words == NULL)
         {
@@ -107,26 +106,29 @@ int main(int argc, char **argv[])
         {
             // printf("\n\n parola-nulla: %s\n\n", search_word);
             main_generatore(input_file, number_words, L"", output_file);
+            return;
         }
         else
         {
             wchar_t wchar[31];
             swprintf(wchar, 31, L"%hs", search_word);
             main_generatore(input_file, number_words, wchar, output_file);
+            return;
         }
     }
-    if (strcmp(task_name, "craft") == 0)
+    else if (strcmp(task_name, "craft") == 0)
     {
+        
+        if (number_words == NULL)
+        {
+            fprintf(stderr, "-n (for task: gen & craft) number of words to generate [is required]\n");
+            return;
+        }
         if (output_file == NULL)
         {
             char string[10];
             strcpy(string, "text.txt");
             output_file = &string;
-        }
-        if (number_words == NULL)
-        {
-            fprintf(stderr, "-n (for task: gen & craft) number of words to generate [is required]\n");
-            return;
         }
         
         main_bigrammi(input_file, "out.csv");
@@ -135,12 +137,14 @@ int main(int argc, char **argv[])
         {
             // printf("\n\n parola-nulla: %s\n\n", search_word);
             main_generatore("out.csv", number_words, L"", output_file);
+            return;
         }
         else
         {
             wchar_t wchar[31];
             swprintf(wchar, 31, L"%hs", search_word);
             main_generatore("out.csv", number_words, wchar, output_file);
+            return;
         }
     }
 

@@ -59,4 +59,11 @@ void pulisci(wchar_t *parola, int indice_parola)
     }
 }
 
+void toLowerCase(wchar_t *str) {
+    while (*str) {
+        *str = towlower(*str);
+        str++;
+    }
+}
+
 #endif
